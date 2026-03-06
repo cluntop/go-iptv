@@ -178,10 +178,6 @@ func ShortURL(params url.Values) dto.ReturnJsonDto {
 	shortURL := params.Get("shortURL")
 	cfg := dao.GetConfig()
 	if shortURL == "1" || shortURL == "true" || shortURL == "on" {
-		_, err := until.CheckLicVer("v1.5.19")
-		if err != nil {
-			return dto.ReturnJsonDto{Code: 0, Msg: err.Error(), Type: "danger"}
-		}
 		cfg.System.ShortURL = 1
 	} else {
 		cfg.System.ShortURL = 0
