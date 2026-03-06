@@ -6,164 +6,6 @@
 		<div class="row">
             <div class="col-lg-6">
                 <div class="card">
-                    <div class="card-header"><h4>授权信息&nbsp;<span style="cursor: default;" class="badge bg-primary" data-container="body" data-toggle="popover" data-placement="bottom" data-content="引擎启动且连接状态下注册账号后登录即可获得一天的试用时长，赞助用户可以到qq群中把赞助截图和邮箱发给群主，或发送到邮箱 1249851115@qq.com 获取授权" title="" data-original-title="">?</span></h4>
-                    {{ if eq .Lic.Status 1 }}
-                    <div style="position: absolute; top: 10px; right: 25px; margin: 0;">
-                        {{ .Lic.Name }}&nbsp;&nbsp;
-                        <button class="btn btn-info btn-xs" 
-                            type="button"
-                            data-toggle="modal" data-target="#changePwd">
-                            密码修改
-                        </button>&nbsp;
-                        <button class="btn btn-info btn-xs" 
-                            type="button" onclick="tdBtnPOST(this)" name="logout">
-                            退出
-                        </button>
-                    </div>
-                    {{ else }}
-                    <div style="position: absolute; top: 10px; right: 25px; margin: 0;">
-                        <button class="btn btn-info btn-xs" 
-                            type="button"
-                            data-toggle="modal" data-target="#register">
-                            注册
-                        </button>&nbsp;
-                        <button class="btn btn-info btn-xs" 
-                            type="button"
-                            data-toggle="modal" data-target="#login">
-                            登录
-                        </button>&nbsp;
-                        <button class="btn btn-info btn-xs" 
-                            type="button"
-                            data-toggle="modal" data-target="#reset">
-                            密码重置
-                        </button>
-                    </div>  
-                    {{end}}
-                    </div>
-                    <div class="card-body" style="position: relative;">
-                        <p>机器码：{{ .Lic.ID }}</p>
-                        <p>授权状态：{{ if eq .Lic.Type 0 }}<font color="red">未授权</font>{{ else if eq .Lic.Type 1 }}<font color="#33a996">已授权</font>{{ else if eq .Lic.Type 2 }}<font color="#33a996">永久授权</font>{{else}}<font color="#33a996">定制授权</font>{{ end }}</p>
-                        <p>过期时间：{{ if gt .Lic.Type 1 }}永久授权{{else}}{{ .Lic.ExpStr }}{{ end }}</p>
-                    </div>
-                </div>
-                <div class="modal fade" id="register" tabindex="-1" role="dialog">
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="$('#lickey').val('');"><span aria-hidden="true">&times;</span></button>
-                                <h4 class="modal-title">注册</h4>
-                            </div>
-                            <form method="post" action="/admin/license">
-                                <div class="modal-body">
-                                    <div class="form-group has-feedback feedback-left">
-                                        <input type="text" placeholder="请输入邮箱" class="form-control" name="name" id="rname" />
-                                        <span class="mdi mdi-account form-control-feedback" aria-hidden="true"></span>
-                                    </div>
-                                    <div class="form-group has-feedback feedback-left">
-                                        <input type="password" placeholder="请输入密码" class="form-control" id="rpwd" name="pwd" />
-                                        <span class="mdi mdi-lock form-control-feedback" aria-hidden="true"></span>
-                                    </div>
-                                    <div class="form-group has-feedback feedback-left">
-                                        <input type="password" placeholder="确认密码" class="form-control" id="rpwd2" name="pwd2" />
-                                        <span class="mdi mdi-lock form-control-feedback" aria-hidden="true"></span>
-                                    </div>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" onclick="submitFormPOST(this)" class="btn btn-primary" name="register">确定</button>
-                                    <button type="button" class="btn btn-default" data-dismiss="modal" onclick="$('#lickey').val('');">关闭</button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal fade" id="login" tabindex="-1" role="dialog">
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="$('#lickey').val('');"><span aria-hidden="true">&times;</span></button>
-                                <h4 class="modal-title">登录</h4>
-                            </div>
-                            <form method="post" action="/admin/license">
-                                <div class="modal-body">
-                                    <div class="form-group has-feedback feedback-left">
-                                        <input type="text" placeholder="请输入邮箱" class="form-control" name="name" id="name" />
-                                        <span class="mdi mdi-account form-control-feedback" aria-hidden="true"></span>
-                                    </div>
-                                    <div class="form-group has-feedback feedback-left">
-                                        <input type="password" placeholder="请输入密码" class="form-control" id="pwd" name="pwd" />
-                                        <span class="mdi mdi-lock form-control-feedback" aria-hidden="true"></span>
-                                    </div>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" onclick="submitFormPOST(this)" class="btn btn-primary" name="login">确定</button>
-                                    <button type="button" class="btn btn-default" data-dismiss="modal" onclick="$('#lickey').val('');">关闭</button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal fade" id="reset" tabindex="-1" role="dialog">
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="$('#rename').val('');"><span aria-hidden="true">&times;</span></button>
-                                <h4 class="modal-title">密码重置</h4>
-                            </div>
-                            <form method="post" action="/admin/license">
-                                <div class="modal-body">
-                                    <div class="form-group has-feedback feedback-left">
-                                        <input type="text" placeholder="请输入邮箱" class="form-control" name="name" id="rename" />
-                                        <span class="mdi mdi-account form-control-feedback" aria-hidden="true"></span>
-                                    </div>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" onclick="submitFormPOST(this)" class="btn btn-primary" name="reset">确定</button>
-                                    <button type="button" class="btn btn-default" data-dismiss="modal" onclick="$('#rename').val('');">关闭</button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-                {{ if eq .Lic.Status 1 }}
-                <div class="modal fade" id="changePwd" tabindex="-1" role="dialog">
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="$('#lickey').val('');"><span aria-hidden="true">&times;</span></button>
-                                <h4 class="modal-title">密码修改</h4>
-                            </div>
-                            <form method="post" action="/admin/license">
-                                <div class="modal-body">
-                                    <div class="form-group has-feedback feedback-left">
-                                        <input type="text" class="form-control" value="{{ .Lic.Name }}" disabled/>
-                                        <span class="mdi mdi-account form-control-feedback" aria-hidden="true"></span>
-                                    </div>
-                                    <div class="form-group has-feedback feedback-left">
-                                        <input type="password" placeholder="请输入原密码" class="form-control" id="opwd" name="opwd" />
-                                        <span class="mdi mdi-lock form-control-feedback" aria-hidden="true"></span>
-                                    </div>
-                                    <div class="form-group has-feedback feedback-left">
-                                        <input type="password" placeholder="请输入密码" class="form-control" id="npwd" name="pwd" />
-                                        <span class="mdi mdi-lock form-control-feedback" aria-hidden="true"></span>
-                                    </div>
-                                    <div class="form-group has-feedback feedback-left">
-                                        <input type="password" placeholder="确认密码" class="form-control" id="npwd2" name="pwd2" />
-                                        <span class="mdi mdi-lock form-control-feedback" aria-hidden="true"></span>
-                                    </div>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" onclick="submitFormPOST(this)" class="btn btn-primary" name="changePwd">确定</button>
-                                    <button type="button" class="btn btn-default" data-dismiss="modal" onclick="$('#lickey').val('');">关闭</button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-                {{ end }}
-			</div>
-
-            <div class="col-lg-6">
-                <div class="card">
                     <div class="card-header"><h4>引擎状态&nbsp;&nbsp;<button class="btn btn-info btn-xs" 
                             type="button" onclick="getLicLog()" data-toggle="modal" data-target="#showLicLog">
                             查看日志
@@ -202,15 +44,11 @@
                 <div class="row">
                     <div class="col-lg-6">
                         <div class="card">
-                            <div class="card-header"><h4>中转访问</h4>
-                            {{ if eq .Lic.Type 0 }} <span class="badge badge-danger">未授权</span>{{ end }}
-                            </div>
-                            <div class="card-body" {{ if eq .Lic.Type 0 }}style="pointer-events: none; opacity: 0.6;"{{ end }}>
+                            <div class="card-header"><h4>中转访问</h4></div>
+                            <div class="card-body">
                                 <form method="post" action="/admin/license">
                                 <div class="input-group"> 
                                     <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
-                                        <!-- <label style="white-space: nowrap;">中转地址:</label> -->
-
                                         <div id="scheme" style="width: 80px;"></div>
                                         <span style=" color: #000000;">://</span>
 
@@ -227,7 +65,7 @@
                                             style="width: 85px; min-width: 85px; flex: 0 0 auto;">
                                     </div>
                                     <small class="help-block" style="margin-left: 10px;">
-                                        提示：源中转的地址，当后台和源中转使用不同域名或ip时，请手动修改这个地址, 端口为容器8080映射出来的端口，若有外网映射，请改为外网端口
+                                        提示：源中转的地址，当后台和源中转使用不同域名或 ip 时，请手动修改这个地址，端口为容器 8080 映射出来的端口，若有外网映射，请改为外网端口
                                     </small>
                                 </div>
                                 <div class="form-inline">
@@ -249,10 +87,8 @@
                     </div>
                     <div class="col-lg-6">
                         <div class="card">
-                            <div class="card-header"><h4>分辨率&&延迟测试</h4>
-                            {{ if eq .Lic.Type 0 }} <span class="badge badge-danger">未授权</span>{{ end }}
-                            </div>
-                            <div class="card-body" {{ if eq .Lic.Type 0 }}style="pointer-events: none; opacity: 0.6;"{{ end }}>
+                            <div class="card-header"><h4>分辨率&&延迟测试</h4></div>
+                            <div class="card-body">
                                 <form method="post" action="/admin/license">
                                 <div class="form-inline">
                                     <div class="form-group" style="margin-right: 15px;">
@@ -272,7 +108,7 @@
                                             <span></span>
                                         </label>
                                     </div>
-                                    <small class="help-block">提示：无法识别分辨率时或访问失败自动禁用频道，若源有UA或其他要求，请谨慎开启</small>
+                                    <small class="help-block">提示：无法识别分辨率时或访问失败自动禁用频道，若源有 UA 或其他要求，请谨慎开启</small>
                                 </div>
                                 </form>
                             </div>
@@ -280,14 +116,12 @@
                     </div>
                     <div class="col-lg-6">
                         <div class="card">
-                            <div class="card-header"><h4>EPG模糊识别</h4>
-                            {{ if eq .Lic.Type 0 }} <span class="badge badge-danger">未授权</span>{{ end }}
-                            </div>
-                            <div class="card-body" {{ if eq .Lic.Type 0 }}style="pointer-events: none; opacity: 0.6;"{{ end }}>
+                            <div class="card-header"><h4>EPG 模糊识别</h4></div>
+                            <div class="card-body">
                                 <form method="post" action="/admin/license">
                                 <div class="form-inline">
                                     <div class="form-group" style="margin-right: 15px;">
-                                        <label>EPG模糊识别:</label>
+                                        <label>EPG 模糊识别:</label>
                                         <label class="lyear-switch switch-primary">
                                             <input type="checkbox" name="epgFuzz" onchange="submitFormPOST(this)" {{if eq .EpgFuzz 1}}checked{{end}}/>
                                             <span></span>
@@ -301,10 +135,8 @@
                     </div>
                     <div class="col-lg-6">
                         <div class="card">
-                            <div class="card-header"><h4>频道聚合</h4>
-                            {{ if eq .Lic.Type 0 }} <span class="badge badge-danger">未授权</span>{{ end }}
-                            </div>
-                            <div class="card-body" {{ if eq .Lic.Type 0 }}style="pointer-events: none; opacity: 0.6;"{{ end }}>
+                            <div class="card-header"><h4>频道聚合</h4></div>
+                            <div class="card-body">
                                 <form method="post" action="/admin/license">
                                 <div class="form-inline">
                                     <div class="form-group" style="margin-right: 15px;">
@@ -314,7 +146,7 @@
                                             <span></span>
                                         </label>&nbsp;&nbsp;&nbsp;<span style=" color: #000000;">{{ if eq .Proxy 0 }}需要先打开中转访问功能{{ end }}</span>
                                     </div>
-                                    <small class="help-block">通过编写正则表达式或者勾选EPG，将不同分组的频道聚合到新分组内(需要频道已经绑定了EPG)</small>
+                                    <small class="help-block">通过编写正则表达式或者勾选 EPG，将不同分组的频道聚合到新分组内 (需要频道已经绑定了 EPG)</small>
                                 </div>
                                 </form>
                             </div>
@@ -322,18 +154,16 @@
                     </div>
                     <div class="col-lg-6">
                         <div class="card">
-                            <div class="card-header"><h4>隐藏作者信息</h4>
-                            {{ if lt .Lic.Type 2 }} <span class="badge badge-danger">未授权</span>{{ end }}
-                            </div>
-                            <div class="card-body" {{ if lt .Lic.Type 2 }}style="pointer-events: none; opacity: 0.6;"{{ end }}>
+                            <div class="card-header"><h4>隐藏作者信息</h4></div>
+                            <div class="card-body">
                                 <form method="post" action="/admin/license">
                                 <div class="form-inline">
                                     <div class="form-group" style="margin-right: 15px;">
                                         <label>隐藏作者信息:</label>
                                         <label class="lyear-switch switch-primary">
-                                            <input type="checkbox" id="dispay" name="dispay" onchange="submitFormPOST(this)" {{ if lt .Lic.Type 2 }}disabled{{else}}{{ if eq DisPay 1 }}checked{{ end }}{{ end }} />
+                                            <input type="checkbox" id="dispay" name="dispay" onchange="submitFormPOST(this)" {{ if eq DisPay 1 }}checked{{ end }} />
                                             <span></span>
-                                        </label>&nbsp;&nbsp;&nbsp;<span style=" color: #000000;">{{ if gt .Lic.Type 1 }}永久授权功能{{ end }}</span>
+                                        </label>
                                     </div>
                                     <small class="help-block">关闭左下角赞助和作者信息</small>
                                 </div>
@@ -343,16 +173,14 @@
                     </div>
                     <div class="col-lg-6">
                         <div class="card">
-                            <div class="card-header"><h4>短订阅链接</h4>
-                            {{ if eq .Lic.Type 0 }} <span class="badge badge-danger">未授权</span>{{ end }}
-                            </div>
-                            <div class="card-body" {{ if eq .Lic.Type 0 }}style="pointer-events: none; opacity: 0.6;"{{ end }}>
+                            <div class="card-header"><h4>短订阅链接</h4></div>
+                            <div class="card-body">
                                 <form method="post" action="/admin/license">
                                 <div class="form-inline">
                                     <div class="form-group" style="margin-right: 15px;">
                                         <label>短订阅链接开关:</label>
                                         <label class="lyear-switch switch-primary">
-                                            <input type="checkbox" id="shortURL" name="shortURL" onchange="submitFormPOST(this)" {{ if eq .Lic.Type 0 }}disabled{{else}}{{if eq .ShortURL 1}}checked{{end}}{{ end }}/>
+                                            <input type="checkbox" id="shortURL" name="shortURL" onchange="submitFormPOST(this)" {{if eq .ShortURL 1}}checked{{end}}/>
                                             <span></span>
                                         </label>
                                     </div>
@@ -362,27 +190,6 @@
                             </div>
                         </div>
                     </div>
-                    <!-- <div class="col-lg-6">
-                        <div class="card">
-                            <div class="card-header"><h4>PHP服务器</h4>
-                            {{ if ne .Lic.Type 3 }} <span class="badge badge-danger">定制授权</span>{{ end }}
-                            </div>
-                            <div class="card-body" {{ if ne .Lic.Type 3 }}style="pointer-events: none; opacity: 0.6;"{{ end }}>
-                                <form method="post" action="/admin/license">
-                                <div class="form-inline">
-                                    <div class="form-group" style="margin-right: 15px;">
-                                        <label>启动PHP服务器:</label>
-                                        <label class="lyear-switch switch-primary">
-                                            <input type="checkbox" id="startPHP" name="startPHP" onchange="submitFormPOST(this)" {{ if ne .Lic.Type 3 }}disabled{{else}}{{if eq .StartPHP 1}}checked{{end}}{{ end }}/>
-                                            <span></span>
-                                        </label>
-                                    </div>
-                                    <small class="help-block">在容器88端口启动php服务器，可以通过映射外部访问，或者不映射端口，频道源使用http://127.0.0.1:88/&lt;文件名&gt;.php 订阅更新频道源</small>
-                                </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div> -->
                 </div>
 			</div>
 		</div>

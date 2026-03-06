@@ -34,16 +34,6 @@ func License(c *gin.Context) {
 			res = service.EpgFuzz(params)
 		case "aggStatus":
 			res = service.AggStatus(params)
-		case "register":
-			res = service.Register(params)
-		case "login":
-			res = service.Login(params)
-		case "changePwd":
-			res = service.ChangePwd(params)
-		case "reset":
-			res = service.Reset(params)
-		case "logout":
-			res = service.Logout()
 		case "dispay":
 			res = service.Dispay(params)
 		case "shortURL":
