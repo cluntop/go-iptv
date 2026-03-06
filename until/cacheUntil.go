@@ -111,29 +111,6 @@ func doRebuild(ctx context.Context) {
 	default:
 		makeMealsEpgCacheAll()
 		log.Println("✅ EPG缓存重建任务执行完成")
-		cfg := dao.GetConfig()
-		if cfg.Resolution.Auto == 1 {
-
-			res, err := dao.WS.SendWS(dao.Request{Action: "testResolutionAll"}) //测试分辨率
-			if err != nil {
-				log.Println("引擎连接失败:", err)
-			} else if res.Code != 1 {
-				log.Println("分辨率测试失败:", res.Msg)
-			} else {
-				log.Println("🚀 开始执行分辨率全量识别任务，测试期间cpu、内存占用会较高，请耐心等待，强制中断执行请关闭自动测试并重启引擎")
-
-				res, _ := dao.WS.SendWS(dao.Request{Action: "getTestStatus"}) //获取测试状态
-				for res.Code != 1 {
-					time.Sleep(5 * time.Second)
-					res, _ = dao.WS.SendWS(dao.Request{Action: "getTestStatus"}) //获取测试状态
-				}
-				log.Println("分辨率测试完成")
-				log.Println("🚀 重新执行EPG缓存重建")
-				dao.Cache.Clear() //清除缓存
-				makeMealsEpgCacheAll()
-				log.Println("✅ EPG缓存重建任务执行完成")
-			}
-		}
 	}
 }
 

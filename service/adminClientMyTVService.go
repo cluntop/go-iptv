@@ -1,41 +1,17 @@
 package service
 
 import (
-	"encoding/json"
 	"go-iptv/assets"
 	"go-iptv/dao"
 	"go-iptv/dto"
 	"go-iptv/until"
-	"log"
 	"net/url"
 	"strconv"
-	"time"
 )
 
 var BuildStatus int64 = 0
 
 func SetMyTVAppInfo(params url.Values) dto.ReturnJsonDto {
-	_, err := until.CheckLicVer("v2.1.5")
-	if err != nil {
-		return dto.ReturnJsonDto{Code: 0, Msg: err.Error(), Type: "danger"}
-	}
-
-	var status int64 = 0
-	res, err := dao.WS.SendWS(dao.Request{Action: "getMyTVBuildStatus"})
-	if err != nil {
-		return dto.ReturnJsonDto{Code: 0, Msg: "连接引擎失败", Type: "danger"}
-	} else if res.Code != 1 {
-		return dto.ReturnJsonDto{Code: 0, Msg: res.Msg, Type: "danger"}
-	} else {
-		if err := json.Unmarshal(res.Data, &status); err != nil {
-			log.Println("⚠️ 无法解析引擎返回的状态:", err)
-			return dto.ReturnJsonDto{Code: 0, Msg: "连接引擎失败", Type: "danger"}
-		}
-	}
-
-	if status == 1 {
-		return dto.ReturnJsonDto{Code: 0, Msg: "正在打包中，请稍后再试", Type: "danger"}
-	}
 	appServerUrl := params.Get("serverUrl")
 	appVersion := params.Get("app_version")
 	upBody := params.Get("up_body")
@@ -73,60 +49,13 @@ func SetMyTVAppInfo(params url.Values) dto.ReturnJsonDto {
 
 	cfg.MyTV.Update = upBody
 
-	// cfg.App.Update.Url = strings.TrimSuffix(cfg.ServerUrl, "/") + "/app/" + cfg.Build.Name + ".apk"
-
-	res, err = dao.WS.SendWS(dao.Request{Action: "buildMyTV", Data: cfg})
-	if err != nil {
-		return dto.ReturnJsonDto{Code: 0, Msg: "连接引擎失败", Type: "danger"}
-	}
-	if res.Code == 1 {
-		BuildStatus = 1
-		go waitMyTVBuildReady(cfg)
-		return dto.ReturnJsonDto{Code: 1, Msg: "APK编译中...", Type: "success"}
-	}
-	return dto.ReturnJsonDto{Code: 0, Msg: "APK编译出错，请查看引擎日志", Type: "danger"}
-
-}
-
-func waitMyTVBuildReady(cfg *dto.Config) {
-	ticker := time.NewTicker(1 * time.Second)
-	defer ticker.Stop()
-
-	for range ticker.C {
-		if getMyTVBuildStatus(cfg) {
-			log.Println("MyTV 编译完成")
-			return
-		}
-	}
-}
-func getMyTVBuildStatus(cfg *dto.Config) bool {
-
-	res, err := dao.WS.SendWS(dao.Request{Action: "getMyTVBuildStatus"})
-	if err != nil {
-		return false
-	} else if res.Code != 1 {
-		return false
-	} else {
-		if err := json.Unmarshal(res.Data, &BuildStatus); err != nil {
-			log.Println("⚠️ 无法解析引擎返回的状态:", err)
-			return false
-		}
-	}
-
-	if BuildStatus == 0 {
-		dao.SetConfig(cfg)
-		return true
-	}
-	return false
+	dao.SetConfig(cfg)
+	return dto.ReturnJsonDto{Code: 1, Msg: "设置成功", Type: "success"}
 }
 
 func GetMyTVBuildStatus() dto.ReturnJsonDto {
-	if BuildStatus == 1 {
-		return dto.ReturnJsonDto{Code: 0, Msg: "APK编译中...", Type: "danger", Data: map[string]interface{}{"size": until.GetFileSize("/config/app/清和IPTV-mytv.apk")}}
-	} else {
-		cfg := dao.GetConfig()
-		return dto.ReturnJsonDto{Code: 1, Msg: "APK编译完成", Type: "success", Data: map[string]interface{}{"size": until.GetFileSize("/config/app/清和IPTV-mytv.apk"), "version": cfg.MyTV.Version, "url": "/app/清和IPTV-mytv.apk", "name": "清和IPTV-mytv-1.2.0." + cfg.MyTV.Version + ".apk"}}
-	}
+	cfg := dao.GetConfig()
+	return dto.ReturnJsonDto{Code: 1, Msg: "APK编译完成", Type: "success", Data: map[string]interface{}{"size": until.GetFileSize("/config/app/清和IPTV-mytv.apk"), "version": cfg.MyTV.Version, "url": "/app/清和IPTV-mytv.apk", "name": "清和IPTV-mytv-1.2.0." + cfg.MyTV.Version + ".apk"}}
 }
 
 func MytvReleases() dto.MyTvDto {

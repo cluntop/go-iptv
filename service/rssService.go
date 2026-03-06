@@ -6,7 +6,6 @@ import (
 	"go-iptv/dto"
 	"go-iptv/models"
 	"go-iptv/until"
-	"log"
 	"strings"
 	"time"
 )
