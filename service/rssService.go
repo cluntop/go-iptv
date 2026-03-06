@@ -69,15 +69,15 @@ func GetRssUrl(id, host string, getnewkey bool) dto.ReturnJsonDto {
 	if cfg.System.ShortURL == 1 {
 		wsRes, err := dao.WS.SendWS(dao.Request{Action: "getShortURLKey", Data: token})
 		if err != nil {
-			return dto.ReturnJsonDto{Code: 0, Msg: "短订阅链接生成失败：" + err.Error(), Type: "danger"}
+			return dto.ReturnJsonDto{Code: 0, Msg: "短订阅链接生成失败：无法连接到服务引擎", Type: "danger"}
 		}
 		if wsRes.Code != 1 {
-			return dto.ReturnJsonDto{Code: 0, Msg: "短订阅链接生成失败：" + wsRes.Msg, Type: "danger"}
+			return dto.ReturnJsonDto{Code: 0, Msg: "短订阅链接生成失败：服务引擎返回错误", Type: "danger"}
 		}
 		var key string
 		if err := json.Unmarshal(wsRes.Data, &key); err != nil {
 			log.Println("短订阅 key 解析错误:", err)
-			return dto.ReturnJsonDto{Code: 0, Msg: "短订阅 key 解析错误：" + err.Error(), Type: "danger"}
+			return dto.ReturnJsonDto{Code: 0, Msg: "短订阅 key 解析失败", Type: "danger"}
 		}
 		res = append(res, RssUrl{Type: "m3u8", Url: host + "/r/" + key + "/p.m3u"})
 		res = append(res, RssUrl{Type: "txt", Url: host + "/r/" + key + "/p.txt"})
