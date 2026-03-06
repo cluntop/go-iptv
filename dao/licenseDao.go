@@ -9,6 +9,7 @@ import (
 	"log"
 	"net/http"
 	"os/exec"
+	"runtime"
 	"strings"
 	"sync"
 	"time"
@@ -336,7 +337,12 @@ func (c *WSClient) SendWS(req Request) (Response, error) {
 // ================== 引擎状态检测 ==================
 
 func IsRunning() bool {
-	cmd := exec.Command("bash", "-c", "ps -ef | grep '/license' | grep -v grep")
+	var cmd *exec.Cmd
+	if runtime.GOOS == "windows" {
+		cmd = exec.Command("tasklist", "/FI", "IMAGENAME eq license.exe")
+	} else {
+		cmd = exec.Command("bash", "-c", "ps -ef | grep '/license' | grep -v grep")
+	}
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		return checkRun()
