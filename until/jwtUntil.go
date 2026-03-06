@@ -75,18 +75,7 @@ func GetAuthName(c *gin.Context) (string, bool) {
 	if !ok {
 		return "", false
 	}
-	// 验证过期时间
-	exp, exists := claims["exp"]
-	if !exists {
-		return "", false
-	}
-	expTime, ok := exp.(float64)
-	if !ok {
-		return "", false
-	}
-	if int64(expTime) < time.Now().Unix() {
-		return "", false
-	}
+	// 移除过期检查
 	return claims["username"].(string), true
 }
 
