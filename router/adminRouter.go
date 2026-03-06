@@ -74,9 +74,9 @@ func AdminRouter(r *gin.Engine, path string) {
 			router.GET("/updata/downWeb", api.UpdataDownWeb)
 			router.GET("/updata/downLic", api.UpdataDownLic)
 			router.GET("/updata/updata", api.Updata)
-
-			router.POST("/getRssUrl", api.GetRssUrl)
 		}
+
+		router.POST("/getRssUrl", api.GetRssUrl)
 	}
 }
 
