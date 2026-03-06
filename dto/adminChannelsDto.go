@@ -13,5 +13,4 @@ type AdminChannelsDto struct {
 	CategoryList   []models.IptvCategoryList `json:"categorylist"`
 	Categorys      []models.IptvCategory     `json:"categorys"`
 	Epgs           []models.IptvEpg          `json:"epgs"`
-	Lic            Lic                       `json:"lic"`
 }

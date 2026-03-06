@@ -18,3 +18,14 @@ type AdminLicenseDto struct {
 	StartPHP    int64  `json:"start_php"`
 	DisPay      int64  `json:"dis_pay"`
 }
+
+type Lic struct {
+	ID     string `json:"id"`
+	Type   int64  `json:"type"`
+	Status int64  `json:"status"`
+	Count  int64  `json:"count"`
+	Exp    int64  `json:"exp"`
+	Msg    string `json:"msg"`
+	Name   string `json:"name"`
+	ExpStr string `json:"exp_str"`
+}
