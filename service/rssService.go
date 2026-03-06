@@ -7,6 +7,7 @@ import (
 	"go-iptv/models"
 	"go-iptv/until"
 	"log"
+	"strings"
 	"time"
 )
 
@@ -67,18 +68,7 @@ func GetRssUrl(id, host string, getnewkey bool) dto.ReturnJsonDto {
 	}
 
 	if cfg.System.ShortURL == 1 {
-		wsRes, err := dao.WS.SendWS(dao.Request{Action: "getShortURLKey", Data: token})
-		if err != nil {
-			return dto.ReturnJsonDto{Code: 0, Msg: "短订阅链接生成失败：无法连接到服务引擎", Type: "danger"}
-		}
-		if wsRes.Code != 1 {
-			return dto.ReturnJsonDto{Code: 0, Msg: "短订阅链接生成失败：服务引擎返回错误", Type: "danger"}
-		}
-		var key string
-		if err := json.Unmarshal(wsRes.Data, &key); err != nil {
-			log.Println("短订阅 key 解析错误:", err)
-			return dto.ReturnJsonDto{Code: 0, Msg: "短订阅 key 解析失败", Type: "danger"}
-		}
+		key := generateShortKey(token)
 		res = append(res, RssUrl{Type: "m3u8", Url: host + "/r/" + key + "/p.m3u"})
 		res = append(res, RssUrl{Type: "txt", Url: host + "/r/" + key + "/p.txt"})
 		res = append(res, RssUrl{Type: "ku9", Url: host + "/k/" + key + "/p.txt"})
@@ -97,16 +87,7 @@ func GetRssUrl(id, host string, getnewkey bool) dto.ReturnJsonDto {
 func GetRssToken(key string) string {
 	cfg := dao.GetConfig()
 	if cfg.System.ShortURL == 1 {
-		wsRes, err := dao.WS.SendWS(dao.Request{Action: "getShortURLToken", Data: key})
-		if err == nil && wsRes.Code == 1 {
-			var token string
-			if err := json.Unmarshal(wsRes.Data, &token); err != nil {
-				log.Println("短订阅token解析错误:", err)
-				return ""
-			} else {
-				return token
-			}
-		}
+		return getTokenFromShortKey(key)
 	}
 	return ""
 }
@@ -158,4 +139,36 @@ func GetRssEpg(token, host string) dto.XmlTV {
 		return res
 	}
 	return until.GetEpg(aesData.I)
+}
+
+// 本地生成短链接 key，不依赖授权引擎
+func generateShortKey(token string) string {
+	// 使用 token 的 MD5 前 8 位作为短 key
+	key := until.Md5(token)[:8]
+
+	// 检查是否已存在
+	var existingToken string
+	err := dao.DB.Table("short_url").Where("key = ?", key).Pluck("token", &existingToken).Error
+	if err == nil && existingToken != "" {
+		if existingToken == token {
+			return key
+		}
+		// 冲突时使用完整 MD5
+		key = until.Md5(token)[:16]
+	}
+
+	// 保存到数据库
+	dao.DB.Exec("INSERT OR REPLACE INTO short_url (token, key) VALUES (?, ?)", token, key)
+
+	return key
+}
+
+// 从短链接 key 获取原始 token
+func getTokenFromShortKey(key string) string {
+	var token string
+	err := dao.DB.Table("short_url").Where("key = ?", key).Pluck("token", &token).Error
+	if err != nil {
+		return ""
+	}
+	return strings.TrimSpace(token)
 }
