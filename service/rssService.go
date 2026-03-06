@@ -68,18 +68,22 @@ func GetRssUrl(id, host string, getnewkey bool) dto.ReturnJsonDto {
 
 	if cfg.System.ShortURL == 1 {
 		wsRes, err := dao.WS.SendWS(dao.Request{Action: "getShortURLKey", Data: token})
-		if err == nil && wsRes.Code == 1 {
-			var key string
-			if err := json.Unmarshal(wsRes.Data, &key); err != nil {
-				log.Println("短订阅key解析错误:", err)
-			} else {
-				res = append(res, RssUrl{Type: "m3u8", Url: host + "/r/" + key + "/p.m3u"})
-				res = append(res, RssUrl{Type: "txt", Url: host + "/r/" + key + "/p.txt"})
-				res = append(res, RssUrl{Type: "ku9", Url: host + "/k/" + key + "/p.txt"})
-				res = append(res, RssUrl{Type: "epg", Url: host + "/r/" + key + "/e.xml"})
-				return dto.ReturnJsonDto{Code: 1, Msg: "订阅生成成功", Type: "success", Data: res}
-			}
+		if err != nil {
+			return dto.ReturnJsonDto{Code: 0, Msg: "短订阅链接生成失败：" + err.Error(), Type: "danger"}
 		}
+		if wsRes.Code != 1 {
+			return dto.ReturnJsonDto{Code: 0, Msg: "短订阅链接生成失败：" + wsRes.Msg, Type: "danger"}
+		}
+		var key string
+		if err := json.Unmarshal(wsRes.Data, &key); err != nil {
+			log.Println("短订阅 key 解析错误:", err)
+			return dto.ReturnJsonDto{Code: 0, Msg: "短订阅 key 解析错误：" + err.Error(), Type: "danger"}
+		}
+		res = append(res, RssUrl{Type: "m3u8", Url: host + "/r/" + key + "/p.m3u"})
+		res = append(res, RssUrl{Type: "txt", Url: host + "/r/" + key + "/p.txt"})
+		res = append(res, RssUrl{Type: "ku9", Url: host + "/k/" + key + "/p.txt"})
+		res = append(res, RssUrl{Type: "epg", Url: host + "/r/" + key + "/e.xml"})
+		return dto.ReturnJsonDto{Code: 1, Msg: "订阅生成成功", Type: "success", Data: res}
 	}
 
 	res = append(res, RssUrl{Type: "m3u8", Url: host + "/getRss/" + token + "/paylist.m3u"})
