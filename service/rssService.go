@@ -66,7 +66,7 @@ func GetRssUrl(id, host string, getnewkey bool) dto.ReturnJsonDto {
 		return dto.ReturnJsonDto{Code: 0, Msg: "生成链接失败" + err.Error(), Type: "danger"}
 	}
 
-	if cfg.System.ShortURL == 1 && dao.Lic.Type != 0 {
+	if cfg.System.ShortURL == 1 {
 		wsRes, err := dao.WS.SendWS(dao.Request{Action: "getShortURLKey", Data: token})
 		if err == nil && wsRes.Code == 1 {
 			var key string
@@ -92,7 +92,7 @@ func GetRssUrl(id, host string, getnewkey bool) dto.ReturnJsonDto {
 
 func GetRssToken(key string) string {
 	cfg := dao.GetConfig()
-	if cfg.System.ShortURL == 1 && dao.Lic.Type != 0 {
+	if cfg.System.ShortURL == 1 {
 		wsRes, err := dao.WS.SendWS(dao.Request{Action: "getShortURLToken", Data: key})
 		if err == nil && wsRes.Code == 1 {
 			var token string

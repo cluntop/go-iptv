@@ -273,7 +273,7 @@ func CaGetChannels(category models.IptvCategory, show bool) []models.IptvChannel
 			}
 			if category.Proxy == 1 && cfg.Proxy.Status == 1 && ch.Status == 1 {
 				urlMsg := fmt.Sprintf("{\"c\":%d,\"u\":\"%s\"}", category.ID, ch.Url)
-				msg, err := UrlEncrypt(dao.Lic.ID, urlMsg)
+				msg, err := UrlEncrypt("default", urlMsg)
 				if err == nil {
 					if cfg.Proxy.Scheme == "" {
 						cfg.Proxy.Scheme = "http"

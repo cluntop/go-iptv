@@ -6,7 +6,6 @@ import (
 	"go-iptv/dto"
 	"go-iptv/until"
 	"log"
-	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -41,7 +40,7 @@ func License(c *gin.Context) {
 		res, err = dao.WS.SendWS(dao.Request{Action: "phpStatus"})
 		if err == nil {
 			if err := json.Unmarshal(res.Data, &phpStatus); err != nil {
-				log.Println("PHPWeb状态解析错误:", err)
+				log.Println("PHPWeb 状态解析错误:", err)
 			}
 		}
 		if phpStatus {
@@ -50,7 +49,6 @@ func License(c *gin.Context) {
 			pageData.StartPHP = 0
 		}
 
-		pageData.Lic = dao.Lic
 		cfg := dao.GetConfig()
 		pageData.Proxy = cfg.Proxy.Status
 
@@ -67,10 +65,8 @@ func License(c *gin.Context) {
 		pageData.AutoRes = cfg.Resolution.Auto
 		pageData.DisCh = cfg.Resolution.DisCh
 		pageData.EpgFuzz = cfg.Epg.Fuzz
-		if pageData.Lic.Exp != 0 {
-			pageData.Lic.ExpStr = time.Unix(pageData.Lic.Exp, 0).Format("2006-01-02 15:04:05")
-		}
 		pageData.ShortURL = cfg.System.ShortURL
+		pageData.DisPay = cfg.System.DisPay
 	}
 
 	if until.IsRunning() {

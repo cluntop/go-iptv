@@ -7,7 +7,6 @@ type AdminLicenseDto struct {
 	Proxy       int64  `json:"proxy"`
 	Port        int64  `json:"port"`
 	ProxyAddr   string `json:"proxy_addr"`
-	Lic         Lic    `json:"lic"`
 	Status      int64  `json:"status"`
 	Online      int64  `json:"online"`
 	Version     string `json:"version"`
@@ -17,22 +16,5 @@ type AdminLicenseDto struct {
 	Aggregation int64  `json:"aggregation"`
 	ShortURL    int64  `json:"short_url"`
 	StartPHP    int64  `json:"start_php"`
-}
-
-type Lic struct {
-	ID     string `json:"id"`
-	Type   int64  `json:"type"`
-	Status int64  `json:"status"`
-	Count  int64  `json:"count"`
-	Exp    int64  `json:"exp"`
-	Msg    string `json:"msg"`
-	Name   string `json:"name"`
-	ExpStr string `json:"exp_str"`
-}
-
-type LoginDto struct {
-	Name string `json:"name"`
-	OPwd string `json:"opwd"`
-	Pwd  string `json:"pwd"`
-	Pwd2 string `json:"pwd2"`
+	DisPay      int64  `json:"dis_pay"`
 }

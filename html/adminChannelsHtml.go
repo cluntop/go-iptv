@@ -20,12 +20,11 @@ func Channels(c *gin.Context) {
 		LoginUser: username,
 		Title:     "频道列表",
 	}
-	pageData.Lic = dao.Lic
 	pageData.ShowAuto = false
 	cfg := dao.GetConfig()
 
 	var query string = "type not like 'auto%'"
-	if pageData.Lic.Type != 0 && cfg.Proxy.Status == 1 && cfg.Aggregation.Status == 1 {
+	if cfg.Proxy.Status == 1 && cfg.Aggregation.Status == 1 {
 		pageData.ShowAuto = true
 		query = "1=1"
 	}

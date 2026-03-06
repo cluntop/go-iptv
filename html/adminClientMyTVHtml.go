@@ -18,10 +18,6 @@ func ClientMyTV(c *gin.Context) {
 	}
 	cfg := dao.GetConfig()
 
-	if dao.Lic.Type == 0 {
-		c.Redirect(302, "/admin/license")
-	}
-
 	var pageData = dto.AdminClientMyTVDto{
 		LoginUser:   username,
 		Title:       "MyTV客户端设置",
