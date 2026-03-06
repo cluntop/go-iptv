@@ -3,7 +3,6 @@ package api
 import (
 	"encoding/xml"
 	"fmt"
-	"go-iptv/dto"
 	"go-iptv/service"
 	"go-iptv/until"
 	"strings"
@@ -12,11 +11,6 @@ import (
 )
 
 func GetRssUrl(c *gin.Context) {
-	_, ok := until.GetAuthName(c)
-	if !ok {
-		c.JSON(200, dto.NewAdminRedirectDto())
-		return
-	}
 	id := c.PostForm("id")
 
 	scheme := GetClientScheme(c)
