@@ -75,9 +75,7 @@ func GetAuthName(c *gin.Context) (string, bool) {
 	if !ok {
 		return "", false
 	}
-	if int64(claims["exp"].(float64)) < time.Now().Unix() {
-		return "", false
-	}
+	// 移除过期检查
 	return claims["username"].(string), true
 }
 
