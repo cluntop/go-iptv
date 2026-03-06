@@ -6,9 +6,7 @@ import (
 	"go-iptv/dao"
 	"go-iptv/dto"
 	"go-iptv/until"
-	"log"
 	"net/url"
-	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -16,14 +14,6 @@ import (
 
 func Proxy(params url.Values) dto.ReturnJsonDto {
 	cfg := dao.GetConfig()
-	if dao.Lic.Type == 0 {
-		cfg.Proxy.Status = 0
-
-		dao.SetConfig(cfg)
-		dao.WS.SendWS(dao.Request{Action: "stopProxy"})
-		return dto.ReturnJsonDto{Code: 0, Msg: "未授权", Type: "danger"}
-	}
-
 	scheme := params.Get("scheme")
 
 	if scheme == "" || (scheme != "http" && scheme != "https") {
@@ -123,11 +113,6 @@ func ResEng() dto.ReturnJsonDto {
 func AutoRes(params url.Values) dto.ReturnJsonDto {
 	autoRes := params.Get("autoRes")
 	cfg := dao.GetConfig()
-	if dao.Lic.Type == 0 {
-		cfg.Resolution.Auto = 0
-		dao.SetConfig(cfg)
-		return dto.ReturnJsonDto{Code: 0, Msg: "未授权", Type: "danger"}
-	}
 	if autoRes == "1" || autoRes == "true" || autoRes == "on" {
 		cfg.Resolution.Auto = 1
 	} else {
@@ -140,11 +125,6 @@ func AutoRes(params url.Values) dto.ReturnJsonDto {
 func DisCh(params url.Values) dto.ReturnJsonDto {
 	disCh := params.Get("disCh")
 	cfg := dao.GetConfig()
-	if dao.Lic.Type == 0 {
-		cfg.Resolution.DisCh = 0
-		dao.SetConfig(cfg)
-		return dto.ReturnJsonDto{Code: 0, Msg: "未授权", Type: "danger"}
-	}
 	if disCh == "1" || disCh == "true" || disCh == "on" {
 		cfg.Resolution.DisCh = 1
 	} else {
@@ -157,11 +137,6 @@ func DisCh(params url.Values) dto.ReturnJsonDto {
 func EpgFuzz(params url.Values) dto.ReturnJsonDto {
 	epgFuzz := params.Get("epgFuzz")
 	cfg := dao.GetConfig()
-	if dao.Lic.Type == 0 {
-		cfg.Epg.Fuzz = 0
-		dao.SetConfig(cfg)
-		return dto.ReturnJsonDto{Code: 0, Msg: "未授权", Type: "danger"}
-	}
 	if epgFuzz == "1" || epgFuzz == "true" || epgFuzz == "on" {
 		cfg.Epg.Fuzz = 1
 	} else {
@@ -174,11 +149,6 @@ func EpgFuzz(params url.Values) dto.ReturnJsonDto {
 func AggStatus(params url.Values) dto.ReturnJsonDto {
 	aggStatus := params.Get("aggStatus")
 	cfg := dao.GetConfig()
-	if dao.Lic.Type == 0 {
-		cfg.Aggregation.Status = 0
-		dao.SetConfig(cfg)
-		return dto.ReturnJsonDto{Code: 0, Msg: "未授权", Type: "danger"}
-	}
 	if aggStatus == "1" || aggStatus == "true" || aggStatus == "on" {
 		cfg.Aggregation.Status = 1
 	} else {
@@ -188,137 +158,9 @@ func AggStatus(params url.Values) dto.ReturnJsonDto {
 	return dto.ReturnJsonDto{Code: 1, Msg: "设置成功", Type: "success"}
 }
 
-func Register(params url.Values) dto.ReturnJsonDto {
-	name := params.Get("name")
-	pwd := params.Get("pwd")
-	pwd2 := params.Get("pwd2")
-
-	if name == "" || pwd == "" || pwd2 == "" {
-		return dto.ReturnJsonDto{Code: 0, Msg: "用户名或密码不能为空", Type: "danger"}
-	}
-	emailSimple := regexp.MustCompile(`^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$`)
-	if !emailSimple.MatchString(name) {
-		return dto.ReturnJsonDto{Code: 0, Msg: "邮箱格式不正确", Type: "danger"}
-	}
-
-	if pwd != pwd2 {
-		return dto.ReturnJsonDto{Code: 0, Msg: "两次输入的密码不一致", Type: "danger"}
-	}
-
-	res, err := dao.WS.SendWS(dao.Request{Action: "register", Data: dto.LoginDto{
-		Name: name,
-		Pwd:  pwd,
-		Pwd2: pwd2,
-	}})
-	if err != nil {
-		return dto.ReturnJsonDto{Code: 0, Msg: "连接引擎失败:" + err.Error(), Type: "danger"}
-	} else if res.Code != 1 {
-		return dto.ReturnJsonDto{Code: 0, Msg: res.Msg, Type: "danger"}
-	}
-
-	return dto.ReturnJsonDto{Code: 1, Msg: res.Msg, Type: "success"}
-}
-
-func ChangePwd(params url.Values) dto.ReturnJsonDto {
-	opwd := params.Get("opwd")
-	pwd := params.Get("pwd")
-	pwd2 := params.Get("pwd2")
-
-	if opwd == "" || pwd == "" || pwd2 == "" {
-		return dto.ReturnJsonDto{Code: 0, Msg: "不能为空", Type: "danger"}
-	}
-
-	if pwd != pwd2 {
-		return dto.ReturnJsonDto{Code: 0, Msg: "两次输入的密码不一致", Type: "danger"}
-	}
-
-	res, err := dao.WS.SendWS(dao.Request{Action: "changepwd", Data: dto.LoginDto{
-		OPwd: opwd,
-		Pwd:  pwd,
-		Pwd2: pwd2,
-	}})
-	if err != nil {
-		return dto.ReturnJsonDto{Code: 0, Msg: "连接引擎失败:" + err.Error(), Type: "danger"}
-	} else if res.Code != 1 {
-		return dto.ReturnJsonDto{Code: 0, Msg: res.Msg, Type: "danger"}
-	}
-
-	return Logout()
-}
-
-func Login(params url.Values) dto.ReturnJsonDto {
-	name := params.Get("name")
-	pwd := params.Get("pwd")
-
-	if name == "" || pwd == "" {
-		return dto.ReturnJsonDto{Code: 0, Msg: "用户名或密码不能为空", Type: "danger"}
-	}
-
-	res, err := dao.WS.SendWS(dao.Request{Action: "login", Data: dto.LoginDto{
-		Name: name,
-		Pwd:  pwd,
-	}})
-	if err != nil {
-		return dto.ReturnJsonDto{Code: 0, Msg: "连接引擎失败:" + err.Error(), Type: "danger"}
-	} else if res.Code != 1 {
-		return dto.ReturnJsonDto{Code: 0, Msg: res.Msg, Type: "danger"}
-	} else {
-		if err := json.Unmarshal(res.Data, &dao.Lic); err != nil {
-			log.Println("⚠️ 无法解析引擎返回的key:", err)
-			return dto.ReturnJsonDto{Code: 0, Msg: "连接引擎失败:" + err.Error(), Type: "danger"}
-		}
-	}
-
-	return dto.ReturnJsonDto{Code: 5, Msg: "登录成功", Type: "success"}
-}
-
-func Reset(params url.Values) dto.ReturnJsonDto {
-	name := params.Get("name")
-
-	if name == "" {
-		return dto.ReturnJsonDto{Code: 0, Msg: "用户名不能为空", Type: "danger"}
-	}
-
-	emailSimple := regexp.MustCompile(`^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$`)
-	if !emailSimple.MatchString(name) {
-		return dto.ReturnJsonDto{Code: 0, Msg: "邮箱格式不正确", Type: "danger"}
-	}
-
-	res, err := dao.WS.SendWS(dao.Request{Action: "resetPwd", Data: dto.LoginDto{
-		Name: name,
-	}})
-	if err != nil {
-		return dto.ReturnJsonDto{Code: 0, Msg: "连接引擎失败:" + err.Error(), Type: "danger"}
-	} else if res.Code != 1 {
-		return dto.ReturnJsonDto{Code: 0, Msg: res.Msg, Type: "danger"}
-	}
-
-	return dto.ReturnJsonDto{Code: 1, Msg: res.Msg, Type: "success"}
-}
-
-func Logout() dto.ReturnJsonDto {
-	res, err := dao.WS.SendWS(dao.Request{Action: "logout"})
-	if err != nil {
-		return dto.ReturnJsonDto{Code: 0, Msg: "连接引擎失败", Type: "danger"}
-	} else if res.Code == 0 {
-		return dto.ReturnJsonDto{Code: 0, Msg: res.Msg, Type: "danger"}
-	} else {
-		if err := json.Unmarshal(res.Data, &dao.Lic); err != nil {
-			log.Println("⚠️ 无法解析引擎返回的key:", err)
-			return dto.ReturnJsonDto{Code: 0, Msg: "连接引擎失败", Type: "danger"}
-		}
-	}
-	return dto.ReturnJsonDto{Code: 5, Msg: "退出成功", Type: "success"}
-}
-
 func Dispay(params url.Values) dto.ReturnJsonDto {
 	dispay := params.Get("dispay")
 	cfg := dao.GetConfig()
-	if dao.Lic.Type < 2 {
-		cfg.System.DisPay = 0
-		dao.SetConfig(cfg)
-		return dto.ReturnJsonDto{Code: 0, Msg: "未授权", Type: "danger"}
-	}
 	if dispay == "1" || dispay == "true" || dispay == "on" {
 		_, err := until.CheckLicVer("v1.5.19")
 		if err != nil {
@@ -335,11 +177,6 @@ func Dispay(params url.Values) dto.ReturnJsonDto {
 func ShortURL(params url.Values) dto.ReturnJsonDto {
 	shortURL := params.Get("shortURL")
 	cfg := dao.GetConfig()
-	if dao.Lic.Type == 0 {
-		cfg.System.ShortURL = 0
-		dao.SetConfig(cfg)
-		return dto.ReturnJsonDto{Code: 0, Msg: "未授权", Type: "danger"}
-	}
 	if shortURL == "1" || shortURL == "true" || shortURL == "on" {
 		_, err := until.CheckLicVer("v1.5.19")
 		if err != nil {
@@ -355,10 +192,6 @@ func ShortURL(params url.Values) dto.ReturnJsonDto {
 
 func StartPHP(params url.Values) dto.ReturnJsonDto {
 	startPHP := params.Get("startPHP")
-
-	if dao.Lic.Type != 3 {
-		return dto.ReturnJsonDto{Code: 0, Msg: "未授权", Type: "danger"}
-	}
 	cfg := dao.GetConfig()
 	if startPHP == "1" || startPHP == "true" || startPHP == "on" {
 		_, err := dao.WS.SendWS(dao.Request{Action: "startPHP"})

@@ -112,7 +112,7 @@ func doRebuild(ctx context.Context) {
 		makeMealsEpgCacheAll()
 		log.Println("✅ EPG缓存重建任务执行完成")
 		cfg := dao.GetConfig()
-		if cfg.Resolution.Auto == 1 && dao.Lic.Type != 0 {
+		if cfg.Resolution.Auto == 1 {
 
 			res, err := dao.WS.SendWS(dao.Request{Action: "testResolutionAll"}) //测试分辨率
 			if err != nil {

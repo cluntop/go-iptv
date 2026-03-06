@@ -27,7 +27,7 @@ func Index(c *gin.Context) {
 
 	cfg := dao.GetConfig()
 	var query string = "enable = 1 and type not like 'auto%'"
-	if dao.Lic.Type != 0 && cfg.Proxy.Status == 1 && cfg.Aggregation.Status == 1 {
+	if cfg.Proxy.Status == 1 && cfg.Aggregation.Status == 1 {
 		query = "enable = 1"
 	}
 

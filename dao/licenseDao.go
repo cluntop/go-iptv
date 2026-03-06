@@ -384,7 +384,6 @@ func (c *WSClient) RestartLic() bool {
 	if err == nil {
 		if err := json.Unmarshal(res.Data, &Lic); err == nil {
 			log.Println("引擎初始化成功")
-			log.Println("机器码:", Lic.ID)
 		} else {
 			log.Println("授权信息解析错误:", err)
 		}

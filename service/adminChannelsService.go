@@ -807,9 +807,6 @@ func SaveCategory(params url.Values) dto.ReturnJsonDto {
 		}
 
 		if autoType != "" {
-			if dao.Lic.Type == 0 {
-				return dto.ReturnJsonDto{Code: 0, Msg: "未授权不支持自动分类", Type: "danger"}
-			}
 			_, err := until.CheckLicVer("v1.5.10")
 			if err != nil {
 				return dto.ReturnJsonDto{Code: 0, Msg: err.Error(), Type: "danger"}
@@ -849,9 +846,6 @@ func SaveCategory(params url.Values) dto.ReturnJsonDto {
 		ca.Rules = ""
 
 		if autoType != "" {
-			if dao.Lic.Type == 0 {
-				return dto.ReturnJsonDto{Code: 0, Msg: "未授权不支持自动分类", Type: "danger"}
-			}
 			_, err := until.CheckLicVer("v1.5.10")
 			if err != nil {
 				return dto.ReturnJsonDto{Code: 0, Msg: err.Error(), Type: "danger"}
@@ -904,9 +898,6 @@ func SaveCategory(params url.Values) dto.ReturnJsonDto {
 
 func TestResolutionOne(params url.Values) dto.ReturnJsonDto {
 	chId := params.Get("testResolutionOne")
-	if dao.Lic.Type == 0 {
-		return dto.ReturnJsonDto{Code: 0, Msg: "未授权", Type: "danger"}
-	}
 	if chId == "" {
 		return dto.ReturnJsonDto{Code: 0, Msg: "频道 id 不能为空", Type: "danger"}
 	}
