@@ -29,8 +29,13 @@ jobs:
           echo "tag=$TAG_NAME" >> $GITHUB_OUTPUT
           echo "Detected tag: $TAG_NAME"
 
-          sed -i "s/var Version = \".*\"/var Version = \"${TAG_NAME}\"/" until/versionUntil.go
-          echo "Updated Version -> ${TAG_NAME}"
+          # 只处理标签触发，分支触发不更新版本
+          if [[ "$GITHUB_REF" == refs/tags/* ]]; then
+            sed -i "s|var Version = \".*\"|var Version = \"${TAG_NAME}\"|" until/versionUntil.go
+            echo "Updated Version -> ${TAG_NAME}"
+          else
+            echo "Not a tag push, skipping version update"
+          fi
 
           # 判断是否包含 beta
           if [[ "$TAG_NAME" == *beta* ]]; then
