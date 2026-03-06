@@ -15,7 +15,6 @@ import (
 	"os"
 	"regexp"
 	"strings"
-	"time"
 
 	"github.com/gin-gonic/gin"
 )
