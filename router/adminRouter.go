@@ -105,7 +105,7 @@ func JWTMiddleware(r *gin.RouterGroup) gin.HandlerFunc {
 			c.SetCookie("token", tokenString, 3600, "/", "", false, true)
 		}
 
-		// 保存 claims 到上下文
+		// 保存 claims 到上下文（移除过期检查）
 		c.Set("auth", claims)
 
 		c.Next()
