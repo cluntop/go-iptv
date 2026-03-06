@@ -1,7 +1,6 @@
 package until
 
 import (
-	"encoding/json"
 	"fmt"
 	"go-iptv/dao"
 	"go-iptv/dto"
@@ -209,45 +208,7 @@ func IsM3UContent(data string) bool {
 }
 
 func GetAutoChannelList(category models.IptvCategory, show bool) []models.IptvChannelShow {
-
 	var result []models.IptvChannelShow
-
-	autoCaCheKey := "autoCategory_" + strconv.FormatInt(category.ID, 10)
-
-	if show {
-		autoCaCheKey = autoCaCheKey + "_show"
-	}
-	if dao.Cache.Exists(autoCaCheKey) {
-		err := dao.Cache.GetStruct(autoCaCheKey, &result)
-		if err == nil {
-			return result
-		}
-	}
-
-	var res dao.Response
-	var err error
-	if show {
-		res, err = dao.WS.SendWS(dao.Request{Action: "getAutoClassShow", Data: category.ID})
-
-		if err != nil || res.Code != 1 {
-			return result
-		}
-	} else {
-		res, err = dao.WS.SendWS(dao.Request{Action: "getAutoClass", Data: category.ID})
-		if err != nil || res.Code != 1 {
-			return result
-		}
-	}
-
-	if err := json.Unmarshal(res.Data, &result); err != nil {
-		return result
-	}
-
-	if err := dao.Cache.SetStruct(autoCaCheKey, result); err != nil {
-		log.Println("自动聚合缓存设置失败:", err)
-		dao.Cache.Delete(autoCaCheKey)
-	}
-
 	return result
 }
 

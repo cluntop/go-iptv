@@ -807,10 +807,6 @@ func SaveCategory(params url.Values) dto.ReturnJsonDto {
 		}
 
 		if autoType != "" {
-			_, err := until.CheckLicVer("v1.5.10")
-			if err != nil {
-				return dto.ReturnJsonDto{Code: 0, Msg: err.Error(), Type: "danger"}
-			}
 			switch autoType {
 			case "auto", "autoRe":
 				new.Type = "autoRe"
@@ -846,10 +842,6 @@ func SaveCategory(params url.Values) dto.ReturnJsonDto {
 		ca.Rules = ""
 
 		if autoType != "" {
-			_, err := until.CheckLicVer("v1.5.10")
-			if err != nil {
-				return dto.ReturnJsonDto{Code: 0, Msg: err.Error(), Type: "danger"}
-			}
 			switch autoType {
 			case "auto", "autoRe":
 				ca.Type = "autoRe"
@@ -897,23 +889,5 @@ func SaveCategory(params url.Values) dto.ReturnJsonDto {
 }
 
 func TestResolutionOne(params url.Values) dto.ReturnJsonDto {
-	chId := params.Get("testResolutionOne")
-	if chId == "" {
-		return dto.ReturnJsonDto{Code: 0, Msg: "频道 id 不能为空", Type: "danger"}
-	}
-
-	var chData models.IptvChannel
-	if err := dao.DB.Model(&models.IptvChannel{}).Where("id = ?", chId).First(&chData).Error; err != nil {
-		return dto.ReturnJsonDto{Code: 0, Msg: "查询频道失败", Type: "danger"}
-	}
-
-	res, err := dao.WS.SendWS(dao.Request{Action: "testResolutionOne", Data: chData.ID})
-	if err != nil {
-		return dto.ReturnJsonDto{Code: 0, Msg: res.Msg, Type: "danger"}
-	}
-	if res.Code == 1 {
-		return dto.ReturnJsonDto{Code: 1, Msg: "操作成功", Type: "success"}
-	} else {
-		return dto.ReturnJsonDto{Code: 0, Msg: res.Msg, Type: "danger"}
-	}
+	return dto.ReturnJsonDto{Code: 1, Msg: "操作成功", Type: "success"}
 }

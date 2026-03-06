@@ -1,12 +1,10 @@
 package service
 
 import (
-	"encoding/json"
 	"go-iptv/dao"
 	"go-iptv/dto"
 	"go-iptv/models"
 	"go-iptv/until"
-	"log"
 	"net/url"
 	"runtime"
 )
@@ -71,29 +69,6 @@ func UpdataCheckWeb() dto.ReturnJsonDto {
 }
 
 func UpdataCheckLic() dto.ReturnJsonDto {
-	var oldLic string
-	verJson, err := dao.WS.SendWS(dao.Request{Action: "getVersion"})
-
-	if err != nil {
-		oldLic = until.ReadFile("/config/bin/Version_lic")
-		if oldLic == "" {
-			return dto.ReturnJsonDto{Code: 0, Msg: "检查更新失败: " + err.Error(), Type: "danger"}
-		}
-	} else {
-		if err := json.Unmarshal(verJson.Data, &oldLic); err != nil {
-			log.Println("版本信息解析错误:", err)
-			return dto.ReturnJsonDto{Code: 0, Msg: "引擎版本信息解析错误，请检查引擎是否正常", Type: "danger"}
-		}
-	}
-
-	up, newLic, err := until.CheckNewVerLic(oldLic)
-
-	if err != nil {
-		return dto.ReturnJsonDto{Code: 0, Msg: "检查更新失败: " + err.Error(), Type: "danger"}
-	}
-	if up {
-		return dto.ReturnJsonDto{Code: 1, Msg: "引擎有新版本: " + newLic, Type: "success"}
-	}
 	return dto.ReturnJsonDto{Code: 2, Msg: "当前已是最新版本", Type: "success"}
 }
 

@@ -315,11 +315,6 @@ func BindChannel() bool {
 
 	if update {
 		go checkCaIdsInMeals(upCaList)
-		cfg := dao.GetConfig()
-		if cfg.Epg.Fuzz == 1 {
-			dao.WS.SendWS(dao.Request{Action: "checkChEpg"})
-			CleanMealsEpgCacheAll()
-		}
 	}
 	return true
 }

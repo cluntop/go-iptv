@@ -68,10 +68,6 @@ func main() {
 
 	bootstrap.InitAlias() // 初始化epg别名
 
-	if os.Getenv("NOLICENSE") != "true" {
-		go bootstrap.InitLicense() // 初始化授权信息
-	}
-
 	if !until.Exists("/config/iptv.db") || !until.Exists("/config/config.yml") || !until.Exists("/config/install.lock") {
 		bootstrap.Installed = false
 		log.Println("检测到未安装，请浏览器访问镜像映射的80端口执行安装流程...")
@@ -89,7 +85,6 @@ func main() {
 		log.Println("conf加载错误")
 		return
 	}
-	until.InitProxy() // 初始化代理
 
 	log.Println("加载数据库...")
 	if debug {
